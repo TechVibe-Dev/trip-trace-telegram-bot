@@ -1,32 +1,23 @@
 # trip-trace-telegram-bot
 
-Bot de Telegram para [TripTrace](https://github.com/TechVibe-Dev/trip-trace-android-app) — una segunda vía para crear, iniciar y finalizar viajes, usando la función **Live Location** de Telegram para el tracking de GPS. No reemplaza a la app Android, es una alternativa más liviana para probar el loop completo (crear → trackear → sync → ver resultado) rápido, sin depender de compilar nada localmente.
+Segunda vía para TripTrace, además de la app Android — un bot de Telegram que usa **Live Location** para el tracking en tiempo real, en vez de un foreground service propio. No reemplaza a `trip-trace-android-app`; es una alternativa más liviana para validar el loop completo (crear → trackear → sync → ver resultado) sin depender de compilar nada pesado.
 
-Le pega directo a [`trip-trace-api`](https://github.com/TechVibe-Dev/trip-trace-api) — mismos endpoints que usa la app.
+Le pega a la misma API (`trip-trace-api`) que usa la app.
 
 ## Cómo funciona
 
-- `/nuevo_viaje <destino>` — pide compartir tu ubicación actual (una sola vez) para usarla como origen del viaje.
-- `/iniciar` — marca el viaje como en curso. A partir de acá, compartí tu **Ubicación en tiempo real** (clip 📎 → Ubicación → Compartir ubicación en tiempo real) — cada actualización que llegue se sube como un punto GPS.
-- `/finalizar` — marca el viaje como completado y calcula las métricas finales (distancia, velocidad).
+- `/nuevo_viaje <destino>` — pide que compartas tu ubicación actual (como origen) y crea el viaje
+- `/iniciar` — marca el viaje como en curso. A partir de ahí, compartí tu **Ubicación en tiempo real** (clip 📎 > Ubicación > Compartir ubicación en tiempo real) — cada actualización que llegue se sube como punto GPS
+- `/finalizar` — termina el viaje, calcula y devuelve las métricas (distancia, velocidad)
 
-**Nota:** Telegram no deja que un bot active el compartir ubicación por su cuenta — el usuario tiene que hacerlo a mano desde el clip de adjuntos, cada vez.
+El bot no puede activar el compartir ubicación por sí solo — es una limitación de la API de Telegram, tenés que iniciarlo vos manualmente desde el clip de adjuntos después de `/iniciar`.
 
-## Setup local
+## Setup
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.default .env
-# completar .env con tu token de bot y credenciales
-python bot.py
-```
+1. Hablá con [@BotFather](https://t.me/BotFather) en Telegram, `/newbot`, seguí los pasos, guardá el token.
+2. Necesitás tu `user_id` de Telegram (por ejemplo, hablando con [@userinfobot](https://t.me/userinfobot)) — el bot solo responde a ese usuario.
+3. Copiá `.env.default` a `.env` y completá los valores.
+4. `chmod +x start.sh` (una sola vez — GitHub no preserva el bit ejecutable al clonar).
+5. `./start.sh` — crea el entorno virtual si no existe, instala/actualiza dependencias, y corre el bot.
 
-### Conseguir el token del bot
-
-Hablá con [@BotFather](https://t.me/BotFather) en Telegram, `/newbot`, seguí los pasos, y te da el token para `TELEGRAM_BOT_TOKEN`.
-
-### Conseguir tu ID de Telegram
-
-Hablá con [@userinfobot](https://t.me/userinfobot) — te devuelve tu `ALLOWED_TELEGRAM_USER_ID`. Es un control de acceso básico: el bot ignora a cualquiera que no sea ese ID.
+Corre por polling — no necesita URL pública ni HTTPS, sirve para correrlo local.

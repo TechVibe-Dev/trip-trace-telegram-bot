@@ -32,7 +32,6 @@ trip_trace_bot/
     └── handlers/      # un módulo por funcionalidad, cada uno con register()
         ├── help.py
         └── status.py
-tests/                 # pytest, sin Telegram ni API reales
 ```
 
 Para agregar un comando nuevo: crear un módulo en `bot/handlers/` con su `register(application, allowed)`,
@@ -69,5 +68,4 @@ Corre por polling: no necesita URL pública ni HTTPS.
 python3 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/ruff check . && .venv/bin/ruff format --check .
-.venv/bin/pytest
 ```

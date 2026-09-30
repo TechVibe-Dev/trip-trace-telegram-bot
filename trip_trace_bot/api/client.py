@@ -34,24 +34,14 @@ class TripTraceClient:
         username: str,
         password: str,
         timeout_seconds: float = 30.0,
-        transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._username = username
         self._password = password
         self._token: str | None = None
-        self._http = httpx.AsyncClient(
-            base_url=base_url, timeout=timeout_seconds, transport=transport
-        )
+        self._http = httpx.AsyncClient(base_url=base_url, timeout=timeout_seconds)
 
     async def close(self) -> None:
         await self._http.aclose()
-
-    async def health(self) -> bool:
-        try:
-            response = await self._http.get("/health")
-        except httpx.HTTPError as exc:
-            raise ApiUnavailableError(str(exc)) from exc
-        return response.status_code == 200
 
     async def get_me(self) -> dict[str, Any]:
         return await self._request("GET", "/api/v1/auth/me")

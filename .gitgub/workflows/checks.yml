@@ -1,0 +1,42 @@
+name: Bot Checks
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+      - 'hotfix/**'
+      - 'release/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Branches that already run on push skip the duplicate pull_request run.
+    if: github.event_name != 'pull_request' || (!startsWith(github.head_ref, 'feature/') && !startsWith(github.head_ref, 'hotfix/') && !startsWith(github.head_ref, 'release/') && !startsWith(github.head_ref, 'doc/'))
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Check formatting
+        run: ruff format --check .

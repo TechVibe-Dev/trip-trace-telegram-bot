@@ -1,0 +1,12 @@
+[project]
+name = "trip-trace-telegram-bot"
+version = "0.1.0"
+description = "Telegram front-end for TripTrace: browse trips and stats from a chat."
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
